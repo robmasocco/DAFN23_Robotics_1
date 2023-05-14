@@ -1,178 +1,114 @@
-% Section 3 - Basic Communication
+% Section 5 - Docker
 % Roberto Masocco <roberto.masocco@uniroma2.it>
-% March 13, 2022
+% May 17, 2023
 
-% ### Basic Communication ###
-\section{Basic Communication}
-\graphicspath{{figs/section3/}}
+% ### Docker ###
+\section{Docker}
+\graphicspath{{figs/section5/}}
 
-% --- ROS 2 Messages ---
-\begin{frame}{ROS 2 Messages}
-A message is a \textbg{single DDS data packet} sent over a \textbg{topic}, from \textbg{publisher nodes} to \textbg{subscriber nodes}, with a specific \textbg{QoS policy}.
-\begin{figure}
-  \centering
-  \includegraphics[scale=.19]{ros2Msg.jpg}
-  \label{fig:msg}
-  \caption{Example of a topic with multiple publisher and subscriber nodes}
-\end{figure}
+% --- Docker Engine ---
+\begin{frame}{Docker Engine}
+	\begin{columns}
+		\column{.5\textwidth}
+		\textbg{Docker} is the currently de-facto standard for building, managing and distributing \textbg{multiplatform} containers.
+		\newline\newline
+		It is an engine (\emph{i.e.}, a collection of \textbg{daemons}) that automates the management of the kernel subsystems in order to set up, store and run containers.
+
+		\column{.5\textwidth}
+		\begin{figure}
+			\centering
+			\label{fig:docker}
+			\includegraphics[scale=.2]{docker.png}
+			\caption{Docker logo.}
+		\end{figure}
+	\end{columns}
+\end{frame}
+\begin{frame}{Docker Engine}
+	\begin{figure}
+		\centering
+		\includegraphics[scale=.29]{dockerScheme.png}
+		\label{fig:dockerscheme}
+		\caption{Docker Engine scheme.}
+	\end{figure}
 \end{frame}
 
-% --- Interface Files - Messages ---
-\begin{frame}[fragile]{Interface Files - Messages}
-Interface files format is specified by the DDS, with data types resolved to machine types according to the platform being used\footnote{\href{https://docs.ros.org/en/galactic/Concepts/About-ROS-Interfaces.html}{\color{blue}\underline{About ROS Interfaces}} (ROS 2 Galactic docs)}.\\
-Message file names end with \texttt{.msg}.\\
-Things start very simply...
+% --- Containers in robotics ---
+\begin{frame}{Containers in robotics}
+	Containers can be of help in some classic scenarios:
+	\begin{itemize}
+		\item \textbg{deploying} applications or whole control architectures, solving issues like \textbg{dependencies} and \textbg{configurations};
+		\item configuring and distributing \textbg{development environments};
+		\item working with \textbg{multiple architectures} at the same time: Docker fully supports \href{https://www.qemu.org/}{\color{blue}\textbf{\underline{QEMU}}} to build and run containers;
+		\item expanding the capabilities of \textbg{(partially) closed-source} hardware solutions (\emph{e.g.}, Nvidia Jetson...).
+	\end{itemize}
+\end{frame}
 
-\begin{columns}
-\column{.9\textwidth}
-% Listing: std_msgs/msg/Int64 message definition
-\begin{lstlisting}[language=ros2msg, caption=Definition of the \texttt{std\_msgs/msg/Int64} message]
-int64 data
+% --- Building a Docker container ---
+\begin{frame}{Building a Docker container}
+	\begin{enumerate}
+		\item A \textbg{Dockerfile} specifies a set of rules to build an \textbg{image}, just like a script.
+		\item \textbg{Images} are the binary archives from which a \textbg{container} can be started: they can be stored, pulled from a remote \textbg{registry} or simply built locally.
+		\item A \textbg{container} can be built from an image and then started, stopped and managed by the Docker daemon.
+		\item Processes started inside the container are subject to its limitations, \emph{e.g.}, \textbg{filesystem jails} prevent them to climb up to the hosts's filesystem.
+	\end{enumerate}
+	Images are built \textbg{incrementally}: each Dockerfile directive defines a new \textbg{layer}, and the Docker engine stores the differences between each build step thanks to \textbg{OverlayFS}.\\
+  For every new container, its filesystem will be in a \textbg{new top layer}.\\
+  This allows to efficiently \textbg{cache and shares build stages}, which will then be stacked together to form the final image.
+\end{frame}
+
+% --- Dockerfiles ---
+\begin{frame}[fragile]{Dockerfiles}
+	\begin{columns}\column{.9\textwidth}
+		\begin{lstlisting}[language=Dockerfile, caption=Minimal example of a Dockerfile running an Ubuntu image in a container]
+ARG VERSION=20.04
+FROM ubuntu:$VERSION # Note the tag!
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    build-essential \
+    git && \
+    rm -rf /tmp/*
+
+ENV DEBIAN_FRONTEND=dialog
+LABEL maintainer.name="Roberto Masocco"
+CMD ["bash"]
 \end{lstlisting}
-
-% Listing: std_msgs/msg/String message definition
-\begin{lstlisting}[language=ros2msg, caption=Definition of the \texttt{std\_msgs/msg/String} message]
-string data
-\end{lstlisting}
-\end{columns}
-
-\end{frame}
-\begin{frame}[fragile]{Interface Files - Messages}
-... then escalate quickly!
-
-\begin{columns}
-\column{.9\textwidth}
-% Listing: sensor_msgs/msg/Image
-\begin{lstlisting}[language=ros2msg, caption=Definition of the \texttt{sensor\_msgs/msg/Image} composite message]
-std_msgs/Header header
-
-uint32 height
-uint32 width
-
-string encoding
-
-uint8 is_bigendian
-uint32 step
-uint8[] data
-\end{lstlisting}
-\end{columns}
-
-\end{frame}
-\begin{frame}[fragile]{Interface Files - Messages}
-Special values (i.e. \emph{constants}) may be specified.
-
-\begin{columns}
-\column{.9\textwidth}
-% Listing: message with constant
-\begin{lstlisting}[language=ros2msg, caption=Definition of an example message with a constant value]
-int64 MYNUM=1 # Must be of compatible type
-
-int64 number
-\end{lstlisting}
-\end{columns}
-
-They are not bound to any field and will appear as special selectable values in the generated C++/Python libraries.\\
-ROS 2 adds its own guidelines\footnote{\href{https://github.com/IntelligentSystemsLabUTV/ros2-examples/blob/galactic/interfaces.md}{\color{blue}\underline{ros2-examples/interfaces.md}}}, and installed interfaces can be inspected with the \texttt{ros2 interface show} command.
+	\end{columns}
 \end{frame}
 
-% --- Message Topics - Quality of Service ---
-\begin{frame}{Message Topics - Quality of Service}
-A \textbg{QoS policy}\footnote{\href{https://docs.ros.org/en/galactic/Concepts/About-Quality-of-Service-Settings.html}{\color{blue}\underline{About QoS Settings}} (ROS 2 Galactic docs)} for publishers/subscribers has the following attributes:
-\begin{itemize}
-  \item \textbg{History} (\emph{keep last N} or \emph{all})
-  \item \textbg{Depth} (queue size \emph{N})
-  \item \textbg{Reliability} (\emph{best-effort} or \emph{reliable}, default: reliable)
-  \item \textbg{Durability} (publishers resend all messages to "late-joiners")
-  \item Deadline
-  \item \textbg{Lifespan} (message expiration date)
-  \item Liveliness
-  \item Lease Duration
-\end{itemize}
-Default \textbg{profiles} are available (e.g. \textbg{Sensor data}, \textbg{Service}...).
+% --- Dockerfile commands ---
+\begin{frame}{Dockerfile commands}
+	\begin{itemize}
+		\item \texttt{FROM repository/image:tag}\\Specifies a base image to pull.
+		\item \texttt{RUN command}\\Runs the following command in a new shell inside the container.
+		\item \texttt{COPY source target}\\Copies a file into the container.
+		\item \texttt{ENV variable=value}\\Sets an environment variable inside the container.
+		\item \texttt{ARG name=value}\\Declares a build argument.
+		\item \texttt{CMD ["command", "arg1", ...]}\\Specifies the command to run when the container is started.
+	\end{itemize}
 \end{frame}
 
-% --- C++ Fundamentals ---
-\begin{frame}[fragile]{C++ Fundamentals}
-Dust off your C programming skills, then add:
-\begin{block}{Object-Oriented Programming}
-\begin{columns}
-\column{.9\textwidth}
-% Listing: C++ OOP example
-\begin{lstlisting}[language=C++, caption=Example of definition of a C++ class]
-class MyClass : public ParentClass
-{
-public:
-  MyClass();
-  // ...
-protected:
-  // ...
-private:
-  // ...
-};
-\end{lstlisting}
-\end{columns}
-\end{block}
+% --- Docker commands ---
+\begin{frame}{Docker commands}
+	Again, just a few (each with a gazillion of options):
+	\begin{itemize}
+		\item \texttt{docker build}\\Builds a new image from a Dockerfile.
+		\item \texttt{docker run}\\Builds and starts a container.
+		\item \texttt{docker ps}\\Lists active containers.
+		\item \texttt{docker exec}\\Runs a command inside a container (\emph{e.g.}, a shell).
+		\item \texttt{docker start}\\Starts a container.
+	\end{itemize}
 \end{frame}
-\begin{frame}[fragile]{C++ Fundamentals}
-\begin{block}{Namespaces}
-Subdivision of the global namespace to avoid naming collisions between multiple libraries, resolved with the \texttt{::} operator.
-
-\begin{columns}
-\column{.9\textwidth}
-% Listings: C++ namespaces usage example
-\begin{lstlisting}[language=C++, caption=Example of namespaces usage]
-MyLib::foo();
-MyClass::foo();
-// Completely different names for the compiler!
-\end{lstlisting}
-\end{columns}
-
-Names may become very long, so usually they are hidden with \texttt{typedef}.
-\end{block}
-\end{frame}
-\begin{frame}[fragile]{C++ Fundamentals}
-\begin{block}{Templates}
-Classes or functions whose implementation depends on some data type. When instantiated or called with a specific type, the corresponding code is generated by the compiler.
-
-\begin{columns}
-\column{.9\textwidth}
-% Listings: C++ template objects example
-\begin{lstlisting}[language=C++, caption=Example of objects of the template class \texttt{std::vector}]
-std::vector<int> int_vector;
-std::vector<double> double_vector;
-\end{lstlisting}
-\end{columns}
-
-These too make names very long, so are usually typedef'd.
-\end{block}
-\end{frame}
-\begin{frame}[fragile]{C++ Fundamentals}
-\begin{block}{Shared Pointers}
-A kind of \textbf{smart pointer} (there are also \texttt{unique} and \texttt{weak}) that also holds an \textbf{usage counter}, incremented by every function or object that is handling the pointer. \textbf{When the \texttt{shared\_ptr} is destroyed, if the counter is zero the pointed object is also destroyed and its memory deallocated.}
-
-\begin{columns}
-\column{.9\textwidth}
-% Listings: C++ shared pointer example
-\begin{lstlisting}[language=C++, caption=Example of shared pointer creation]
-{
-  // A new scope starts here
-  std::shared_ptr<rclcpp::Node> node =
-    std::make_shared<rclcpp::Node>("my_node");
-}
-// Here the node pointer has been destroyed!
-\end{lstlisting}
-\end{columns}
-
-Obviously \texttt{std::shared\_ptr} is a template class. ROS 2 heavily relies on them, and the \texttt{SharedPtr} alias is frequently defined.
-\end{block}
-\end{frame}
-
-% --- Example: Topic Pub/Sub ---
-\begin{frame}{Example: Topic Pub/Sub}
-Example packages and additional materials are available on GitHub.
-\begin{block}{}
-  \centering
-  \href{https://github.com/IntelligentSystemsLabUTV/ros2-examples}{\color{blue}\underline{IntelligentSystemsLabUTV/ros2-examples}}
-\end{block}
-Now go have a look at the \href{https://github.com/IntelligentSystemsLabUTV/ros2-examples/tree/galactic/src/topic_pubsub}{\color{blue}\underline{ros2-examples/src/topic\_pubsub}} package!
+\begin{frame}{Docker commands}
+	\begin{itemize}
+		\item \texttt{docker stop}\\Stops a container.
+		\item \texttt{docker images}\\Lists available images.
+		\item \texttt{docker rm}\\Removes a container.
+		\item \texttt{docker rmi}\\Removes an image.
+	\end{itemize}
+	Active containers are usually referenced by their \textbg{ID}.
+  \newline\newline
+  See the \href{https://docs.docker.com/engine/reference/builder/}{\color{blue}\underline{Dockerfile reference}} and the \href{https://docs.docker.com/engine/reference/commandline/docker/}{\color{blue}\underline{Docker documentation}} for more.
 \end{frame}

@@ -43,10 +43,15 @@
     tabsize=2
 }
 \lstset{style=beamer}
-\lstdefinelanguage{ros2msg}{
+\lstdefinelanguage{Dockerfile}{
   alsoletter={[, ], _, /},
   morecomment=[l][\color{codegreen}]{\#},
-  morekeywords={int64, uint32, string, uint8, uint8[], std_msgs/Header}
+  morekeywords={FROM, RUN, ADD, COPY, LABEL, ENV, ARG, CMD}
+}
+\lstdefinelanguage{compose}{
+  alsoletter={:, -, /},
+  morecomment=[l][\color{codegreen}]{\#},
+  morekeywords={services:, build:, context:, network_mode:, args:, environment:, command:, volumes:, image:, -}
 }
 
 \usepackage{hyperref}
@@ -73,6 +78,12 @@
 \input{sections/ros2}
 
 % --- Section 4 ---
-%\input{sections/docker}
+\input{sections/containers}
+
+% --- Section 5 ---
+\input{sections/docker}
+
+% --- Section 6 ---
+%\input{sections/docker-compose}
 
 \end{document}
