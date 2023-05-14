@@ -86,7 +86,8 @@
 		\item \textbg{rcl}: ROS Client Support Library (C), implements basic entities: \textbg{nodes}, \textbg{publishers}, \textbg{subscribers}, \textbg{services}, \textbg{clients}, and \textbg{timers}.
 		\item \textbg{rclc}/\textbg{rclcpp}/\textbg{rclpy}: ROS Client Library (C/C++/Python), implements the same entities as \texttt{rcl}, plus extended functionalities like the \textbg{executor}: a job scheduler.
 	\end{enumerate}
-	Then, there are \textbg{packages}: libraries, tools, and applications, both officially provided and community-contributed.
+	Then, there are \textbg{packages}: libraries, tools, and applications, both officially provided and community-contributed. The entire ROS 2 codebase is on \href{https://github.com/ros2}{\color{blue}\underline{GitHub}}.\\
+  Keep this in mind during debugging, or while looking for information on an API!
 \end{frame}
 \begin{frame}{Application Programming Interface}{How a ROS 2 application works}
 	The most important entity is the \textbg{node}, whose functionalities are specified upon creation.\\
@@ -99,10 +100,10 @@
 	\end{itemize}
 	Thus, it is both an \textbg{operational unit} and a \textbg{communication endpoint}.\\
 	Nodes are usually handled by \textbg{executors}, which are responsible for scheduling and processing their workload.
-	\begin{alertblock}{}
+	\begin{block}{}
 		\centering
-		\textbr{Nodes are just objects in your application: they can embed any kind of software module, but they do not limit the design to their paradigms.}
-	\end{alertblock}
+		\textbf{Nodes are just objects in your application: they can embed any kind of software module, but they do not limit the design to their paradigms.}
+	\end{block}
 \end{frame}
 
 % --- Executors: events and callbacks ---
