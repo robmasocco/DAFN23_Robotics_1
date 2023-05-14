@@ -44,7 +44,7 @@
 \end{frame}
 
 % --- Building a Docker container ---
-\begin{frame}{Building a Docker container}
+\begin{frame}{Building a Docker container}{Step by step}
 	\begin{enumerate}
 		\item A \textbg{Dockerfile} specifies a set of rules to build an \textbg{image}, just like a script.
 		\item \textbg{Images} are the binary archives from which a \textbg{container} can be started: they can be stored, pulled from a remote \textbg{registry} or simply built locally.
@@ -52,15 +52,15 @@
 		\item Processes started inside the container are subject to its limitations, \emph{e.g.}, \textbg{filesystem jails} prevent them to climb up to the hosts's filesystem.
 	\end{enumerate}
 	Images are built \textbg{incrementally}: each Dockerfile directive defines a new \textbg{layer}, and the Docker engine stores the differences between each build step thanks to \textbg{OverlayFS}.\\
-  For every new container, its filesystem will be in a \textbg{new top layer}.\\
-  This allows to efficiently \textbg{cache and shares build stages}, which will then be stacked together to form the final image.
+	For every new container, its filesystem will be in a \textbg{new top layer}.\\
+	This allows to efficiently \textbg{cache and share build stages}, which will then be stacked together to form images, but operating in a \textbg{copy-on-write}, \textbg{slower} fashion.
 \end{frame}
 
 % --- Dockerfiles ---
 \begin{frame}[fragile]{Dockerfiles}
 	\begin{columns}\column{.9\textwidth}
-		\begin{lstlisting}[language=Dockerfile, caption=Minimal example of a Dockerfile running an Ubuntu image in a container]
-ARG VERSION=20.04
+		\begin{lstlisting}[language=Dockerfile, caption=Minimal example of a Dockerfile running an Ubuntu image in a container.]
+ARG VERSION=22.04
 FROM ubuntu:$VERSION # Note the tag!
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -69,7 +69,7 @@ RUN apt-get update && \
     apt-get install -y --no-install-recommends \
     build-essential \
     git && \
-    rm -rf /tmp/*
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*/apt/lists/*
 
 ENV DEBIAN_FRONTEND=dialog
 LABEL maintainer.name="Roberto Masocco"
@@ -108,7 +108,19 @@ CMD ["bash"]
 		\item \texttt{docker rm}\\Removes a container.
 		\item \texttt{docker rmi}\\Removes an image.
 	\end{itemize}
-	Active containers are usually referenced by their \textbg{ID}.
-  \newline\newline
-  See the \href{https://docs.docker.com/engine/reference/builder/}{\color{blue}\underline{Dockerfile reference}} and the \href{https://docs.docker.com/engine/reference/commandline/docker/}{\color{blue}\underline{Docker documentation}} for more.
+	Active containers are usually referenced by their \textbg{ID} (\emph{e.g.}, \texttt{abae6cae4648}).
+	\newline\newline
+	See the \href{https://docs.docker.com/engine/reference/builder/}{\color{blue}\underline{Dockerfile reference}} and the \href{https://docs.docker.com/engine/reference/commandline/docker/}{\color{blue}\underline{Docker CLI reference}} for more.
+\end{frame}
+
+% --- Containers on real robots ---
+\begin{frame}{Containers on real robots}{Best practices}
+  To run containers on embedded systems and robot SBCs, some configurations are suggested which \textbg{would not apply} in traditional containerization scenarios:
+  \begin{itemize}
+    \item the host \textbg{network stack} should be fully exposed to allow for \textbg{ROS} and other network-based \textbg{middleware} to work properly (\texttt{-{}-network host});
+    \item the \textbg{IPC namespace} should be shared to allow for \textbg{shared memory} and \textbg{IPC} to work properly (\texttt{-{}-ipc host});
+    \item to allow access to the \textbg{hardware} mounted on the host, one should grant full privileges to the container (\texttt{-{}-privileged}) and mount \texttt{/dev} and \texttt{/sys} inside it (\texttt{-v /dev:/dev -v /sys:/sys});
+    \item your development directory should be \textbg{mounted as a volume} inside the container, so that file manipulations happen on the host filesystem (\texttt{-v /your/code:/workspace}).
+  \end{itemize}
+  We would like some utility to \textbg{automate} this process...
 \end{frame}
