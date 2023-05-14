@@ -1,22 +1,22 @@
-% DAFN - ROS 2 - Lecture 1: Middleware Fundamentals
+% DAFN23 - Robotics - Lecture 1
 % Roberto Masocco <roberto.masocco@uniroma2.it>
-% March 6, 2022
+% May 14, 2023
 
-\documentclass{beamer}
+\documentclass[aspectratio=169]{beamer}
 
 % Slides layout
 \usepackage[
-    title={Robot Operating System 2},
-    subtitle={Lecture 1: Middleware Fundamentals},
+    title={Roboticist 101},
+    subtitle={Software and middleware for robotics},
     event={DAFN},
     author={Roberto Masocco},
     longauthor={Roberto Masocco},
     email={roberto.masocco@uniroma2.it},
     institute={Tor Vergata},
-    longinstitute={University of Rome "Tor Vergata"},
+    longinstitute={University of Rome Tor Vergata},
     department={Department of Civil Engineering and Computer Science Engineering},
-    researchgroup={Intelligent Systems Lab},
-    date={April 27, 2022}
+    researchgroup={},
+    date={May 17, 2023}
 ]{utvengbeamer}
 
 % Code listings settings
@@ -50,6 +50,7 @@
 }
 
 \usepackage{hyperref}
+\usepackage{wasysym}
 
 \begin{document}
 
@@ -63,12 +64,15 @@
 \end{frame}
 
 % --- Section 1 ---
-\input{sections/1_middlewareInRobotics}
+\input{sections/intro}
 
 % --- Section 2 ---
-\input{sections/2_ros2Overview}
+\input{sections/middleware}
 
 % --- Section 3 ---
-\input{sections/3_basicCommunication}
+\input{sections/ros2}
+
+% --- Section 4 ---
+%\input{sections/docker}
 
 \end{document}
