@@ -99,7 +99,7 @@
 		\item register \textbg{callbacks} to handle \textbg{events}, such as timers or incoming messages.
 	\end{itemize}
 	Thus, it is both an \textbg{operational unit} and a \textbg{communication endpoint}.\\
-	Nodes are usually handled by \textbg{executors}, which are responsible for scheduling and processing their workload.
+	Nodes are usually handled by \textbg{executors}, which are responsible for scheduling and processing their \textbg{ROS-workload}.
 	\begin{block}{}
 		\centering
 		\textbf{Nodes are just objects in your application: they can embed any kind of software module, but they do not limit the design to their paradigms.}
@@ -142,7 +142,6 @@
 	\visible<2>{
 		What to do when development gets to a really low level?
 		\begin{itemize}
-			\item Use something else.
 			\item Hand off stuff to dedicated \textbg{microcontrollers}.
 			\item Use \textbg{micro-ROS}: hard real-time ROS 2 on microcontrollers and different communication interfaces.
 		\end{itemize}

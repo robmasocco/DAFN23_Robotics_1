@@ -95,7 +95,7 @@ CMD ["bash"]
 	Again, just a few (each with a gazillion of options):
 	\begin{itemize}
 		\item \texttt{docker build}\\Builds a new image from a Dockerfile.
-		\item \texttt{docker run}\\Builds and starts a container.
+		\item \texttt{docker run}\\Builds and starts a container, optionally overriding the command (\texttt{CMD}).
 		\item \texttt{docker ps}\\Lists active containers.
 		\item \texttt{docker exec}\\Runs a command inside a container (\emph{e.g.}, a shell).
 		\item \texttt{docker start}\\Starts a container.
@@ -108,7 +108,7 @@ CMD ["bash"]
 		\item \texttt{docker rm}\\Removes a container.
 		\item \texttt{docker rmi}\\Removes an image.
 	\end{itemize}
-	Active containers are usually referenced by their \textbg{ID} (\emph{e.g.}, \texttt{abae6cae4648}).
+	Containers and images are usually referenced by their \textbg{ID} (\emph{e.g.}, \texttt{abae6cae4648}).
 	\newline\newline
 	See the \href{https://docs.docker.com/engine/reference/builder/}{\color{blue}\underline{Dockerfile reference}} and the \href{https://docs.docker.com/engine/reference/commandline/docker/}{\color{blue}\underline{Docker CLI reference}} for more.
 \end{frame}
